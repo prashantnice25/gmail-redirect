@@ -8,40 +8,49 @@
     font-family: -apple-system, Roboto, Arial, sans-serif;
     text-align: center;
     padding: 40px 20px;
-    background: #f5f5f5;
+    background: #eef1f5;
     line-height: 1.5;
   }
+  .card {
+    max-width: 380px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
   p.heading {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 30px;
-    color: #222;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 28px;
+    color: #1a2b3c;
   }
   button, a.mail-link {
     display: block;
     width: 100%;
-    max-width: 340px;
-    margin: 16px auto;
-    padding: 22px;
-    font-size: 24px;
-    font-weight: bold;
-    border-radius: 10px;
-    border: none;
+    margin: 14px 0;
+    padding: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid transparent;
     text-decoration: none;
-    color: #fff;
-    background: #4285F4;
+    cursor: pointer;
   }
-  #btn-yahoo { background: #6001D2; }
-  #btn-outlook { background: #0072C6; }
-  a.mail-link { background: #555; }
+  #btn-gmail { background: #1a2b3c; color: #fff; }
+  #btn-yahoo { background: #34495e; color: #fff; }
+  #btn-outlook { background: #4a6785; color: #fff; }
+  a.mail-link { background: #fff; color: #1a2b3c; border-color: #b0b8c1; }
 </style>
 </head>
 <body>
+<div class="card">
 <p class="heading">Choose your email app:</p>
 <button id="btn-gmail">Open in Gmail</button>
 <button id="btn-yahoo">Open in Yahoo Mail</button>
 <button id="btn-outlook">Open in Outlook</button>
 <a id="fallback" class="mail-link" href="#">Open in default mail app</a>
+</div>
 <script>
   var to = "ar.ascotcirp2025@gmail.com";
   var cc = "cirpascot@gmail.com,jindalrahul60@gmail.com,Intellicity.buyers@gmail.com";
@@ -108,9 +117,22 @@ E-mail ID registered with the Resolution Professional:
 
 Mobile No.:`;
 
-  var gmailUrl = "googlegmail://co?to=" + encodeURIComponent(to) + "&cc=" + encodeURIComponent(cc) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-  var yahooUrl = "ymail://mail/compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-  var outlookUrl = "ms-outlook://compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  var gmailQ = "to=" + encodeURIComponent(to) + "&cc=" + encodeURIComponent(cc) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  var plainQ = "to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  var isAndroid = /Android/i.test(navigator.userAgent);
+
+  // Each mobile OS's Gmail/Yahoo/Outlook app registers a different scheme, so build
+  // the right one per OS: Android needs an intent:// URI naming the app's package,
+  // iOS (and everything else) uses the app's own custom URL scheme directly.
+  var gmailUrl = isAndroid
+    ? "intent://co?" + gmailQ + "#Intent;scheme=mailto;package=com.google.android.gm;end"
+    : "googlegmail://co?" + gmailQ;
+  var yahooUrl = isAndroid
+    ? "intent://compose?" + plainQ + "#Intent;scheme=mailto;package=com.yahoo.mobile.client.android.mail;end"
+    : "ymail://mail/compose?" + plainQ;
+  var outlookUrl = isAndroid
+    ? "intent://compose?" + plainQ + "#Intent;scheme=mailto;package=com.microsoft.office.outlook;end"
+    : "ms-outlook://compose?" + plainQ;
   var mailto = "mailto:" + encodeURIComponent(to) + "?cc=" + encodeURIComponent(cc) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
 
   document.getElementById("btn-gmail").onclick = function () { window.location.href = gmailUrl; };
