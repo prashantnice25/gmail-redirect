@@ -3,9 +3,45 @@
 <head>
 <meta charset="utf-8">
 <title>Opening email...</title>
+<style>
+  body {
+    font-family: -apple-system, Roboto, Arial, sans-serif;
+    text-align: center;
+    padding: 40px 20px;
+    background: #f5f5f5;
+    line-height: 1.5;
+  }
+  p.heading {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #222;
+  }
+  button, a.mail-link {
+    display: block;
+    width: 100%;
+    max-width: 340px;
+    margin: 16px auto;
+    padding: 22px;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+    color: #fff;
+    background: #4285F4;
+  }
+  #btn-yahoo { background: #6001D2; }
+  #btn-outlook { background: #0072C6; }
+  a.mail-link { background: #555; }
+</style>
 </head>
 <body>
-<p>Opening Gmail... if nothing happens, <a id="fallback" href="#">tap here</a>.</p>
+<p class="heading">Choose your email app:</p>
+<button id="btn-gmail">Open in Gmail</button>
+<button id="btn-yahoo">Open in Yahoo Mail</button>
+<button id="btn-outlook">Open in Outlook</button>
+<a id="fallback" class="mail-link" href="#">Open in default mail app</a>
 <script>
   var to = "ar.ascotcirp2025@gmail.com";
   var cc = "cirpascot@gmail.com,jindalrahul60@gmail.com,Intellicity.buyers@gmail.com";
@@ -72,31 +108,15 @@ E-mail ID registered with the Resolution Professional:
 
 Mobile No.:`;
 
-  var q = "to=" + encodeURIComponent(to) + "&cc=" + encodeURIComponent(cc) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-
-  // Ordered list of app-specific compose schemes to try before falling back to the OS default mail app.
-  var attempts = [
-    "googlegmail://co?" + q,                                                                          // 1. Gmail app
-    "ymail://mail/compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body), // 2. Yahoo Mail app
-    "ms-outlook://compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)   // 3. Outlook app
-  ];
+  var gmailUrl = "googlegmail://co?to=" + encodeURIComponent(to) + "&cc=" + encodeURIComponent(cc) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  var yahooUrl = "ymail://mail/compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  var outlookUrl = "ms-outlook://compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
   var mailto = "mailto:" + encodeURIComponent(to) + "?cc=" + encodeURIComponent(cc) + "&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+
+  document.getElementById("btn-gmail").onclick = function () { window.location.href = gmailUrl; };
+  document.getElementById("btn-yahoo").onclick = function () { window.location.href = yahooUrl; };
+  document.getElementById("btn-outlook").onclick = function () { window.location.href = outlookUrl; };
   document.getElementById("fallback").href = mailto;
-
-  var opened = false;
-  document.addEventListener("visibilitychange", function () {
-    if (document.hidden) { opened = true; } // page lost focus, assume an app took over
-  });
-
-  function tryNext(i) {
-    if (opened || i >= attempts.length) {
-      if (!opened) { window.location.href = mailto; } // 4. OS default mail app
-      return;
-    }
-    window.location.href = attempts[i];
-    setTimeout(function () { tryNext(i + 1); }, 1200);
-  }
-  tryNext(0);
 </script>
 </body>
 </html>
